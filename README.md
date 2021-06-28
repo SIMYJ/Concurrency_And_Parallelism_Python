@@ -4,7 +4,7 @@
 |섹션|제목|날짜|확인|
 |---|----|----|---|
 |Multithreading|Difference between Process And Thread|21/06/26|✅|
-|Multithreading|Python's GIL||[]|
+|Multithreading|Python's GIL|21/06/29|✅|
 |Multithreading|Thread(1) - Basic|||
 |Multithreading|Thread(2) - Daemon, Join|||
 |Multithreading|Thread(3) - ThreadPoolExecutor|||
