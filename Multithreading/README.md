@@ -3,8 +3,8 @@
 # Python's GIL
 
 ```
-- 파이썬에만 있는 독특한 특징 Gill(Global Interpreter Lock)
-- Gill를 알고 있으면 파이썬의 멀티쓰레딩 프로그램 만들때 이해하기 유용하다.
+- 파이썬에만 있는 독특한 특징 Gil(Global Interpreter Lock)
+- Gil를 알고 있으면 파이썬의 멀티쓰레딩 프로그램 만들때 이해하기 유용하다.
  ```
 
 
@@ -22,8 +22,8 @@
 
 ## Gil 특징
 ### (1). py파일을 Cpython이 내부적으로 해석을 한다.(python파일을 bytecode로 변경)
-	-CPython -> Python(bytecode) 실행 시 여러 thread 사용 할 경우
-		- 단일 스레드만이 Python object에 접근 하게 제한하는 mutex
+- CPython -> Python(bytecode) 실행 시 여러 thread 사용 할 경우
+	- 단일 스레드만이 Python object에 접근 하게 제한하는 mutex
 
 
 
