@@ -5,7 +5,7 @@
 |---|----|----|---|
 |Multithreading|Difference between Process And Thread|21/06/26|✅|
 |Multithreading|Python's GIL|21/06/29|✅|
-|Multithreading|Thread(1) - Basic|||
+|Multithreading|Thread(1) - Basic|21/06/30|✅|
 |Multithreading|Thread(2) - Daemon, Join|||
 |Multithreading|Thread(3) - ThreadPoolExecutor|||
 |Multithreading|Thread(4) - Lock, Deadlock|||
