@@ -65,10 +65,10 @@ https://m.blog.naver.com/alice_k106/221566619995
 - Keyword - threading basic
 - Main Thread와 Sub(Child) Thread
 
-***logging threading,time는 파이썬 빌드인패키지이여서 파이썬에 내장되어 있다.***
-***스레드는 디버깅이 어렵기 때문에 logging패키징을 통해서 로그를 확인한다.(디버깅역할)***
-***.start()는 스레드 시작***
-***.join()는 서브스레드가 끝날때 까지 메인스레드가 대기한다.***
+***logging threading,time는 파이썬 빌드인패키지이여서 파이썬에 내장되어 있다.***    
+***스레드는 디버깅이 어렵기 때문에 logging패키징을 통해서 로그를 확인한다.(디버깅역할)***     
+***.start()는 스레드 시작***     
+***.join()는 서브스레드가 끝날때 까지 메인스레드가 대기한다.***      
 
 
 ```python
@@ -108,18 +108,11 @@ if __name__ == "__main__":
 ```
 ```
 03:37:44: Main-Thread : before creating thread
-
 03:37:44: Main-Thread : before running thread
-
 03:37:44: Sub-Thread First: starting
-
 03:37:44: Main-Thread : wait for the thread to finish
-
 03:37:44: Main-Thread : all done
-
 03:37:47: Sub-Thread First: finishing
-
-
 
 ```
 
@@ -175,17 +168,11 @@ def thread_func(name):
 
 ```
 03:37:44: Main-Thread : before creating thread
-
 03:37:44: Main-Thread : before running thread
-
 03:37:44: Sub-Thread First: starting
-
 03:37:44: Main-Thread : wait for the thread to finish
-
 03:37:44: Main-Thread : all done
-
 03:37:47: Sub-Thread First: finishing
-
 
 ```
 
