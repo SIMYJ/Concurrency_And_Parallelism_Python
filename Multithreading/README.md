@@ -65,11 +65,14 @@ https://m.blog.naver.com/alice_k106/221566619995
 - Keyword - threading basic
 - Main Thread와 Sub(Child) Thread
 
-***logging threading,time는 파이썬 빌드인패키지이여서 파이썬에 내장되어 있다.***    
+***logging, threading, time는 파이썬 빌드인패키지이기때문에 파이썬에 내장되어 있다.***    
 ***스레드는 디버깅이 어렵기 때문에 logging패키징을 통해서 로그를 확인한다.(디버깅역할)***     
+*** if __name__ == "__main__" : => 메인영역이 실행되면 Main스레드가 자동으로 생성된다. ***
 ***.start()는 스레드 시작***     
 ***.join()는 서브스레드가 끝날때 까지 메인스레드가 대기한다.***      
 
+
+## x.join()를 사용하지 않은 코드
 
 ```python
 # logging threading,time 파이썬 빌드인패키지이여서 파이썬에 내장되어 있다.
@@ -79,6 +82,7 @@ import time
 
 # 스레드 실행 함수
 def thread_func(name):
+
     logging.info("Sub-Thread %s: starting", name)
     time.sleep(3)
     logging.info("Sub-Thread %s: finishing", name)
@@ -89,7 +93,10 @@ if __name__ == "__main__":
     format = "%(asctime)s: %(message)s"
     logging.basicConfig(format=format, level=logging.INFO, datefmt="%H:%M:%S")
     logging.info("Main-Thread : before creating thread")
-    
+    #현재까지 스레드 한개
+    ## 스레드는 디버그깅이 어렵기 때문에 logging패키징을 통해서 로그를 확인한다.(디버깅역할)
+   
+
     # 함수 인자 확인
     x = threading.Thread(target=thread_func, args=('First',))
     
@@ -120,10 +127,9 @@ if __name__ == "__main__":
 
 
 
-```python
-# 기초 Thread 생성 예제
-# Main Thread vs Sub(Child) Thread
+## x.join()를 사용한 코드
 
+```python
 
 # 이 밑의 3개는 파이썬 빌드인 패키지/내장되어있다.
 import logging
@@ -147,7 +153,7 @@ if __name__ == "__main__" :
 
     logging.info("Main-Thread: before running thread")
 
-    #서브 스르ㅔ드 시작
+    #서브 스레드 시작
     x.start()
 
     logging.info("Main-Thread : wait for the thread to finish")
