@@ -21,7 +21,7 @@
 
 
 ## Gil 특징
-### (1). py파일을 Cpython이 내부적으로 해석을 한다.(python파일을 bytecode로 변경)
+-  (1). py파일을 Cpython이 내부적으로 해석을 한다.(python파일을 bytecode로 변경)
 - CPython -> Python(bytecode) 실행 시 여러 thread 사용 할 경우
 	- 단일 스레드만이 Python object에 접근 하게 제한하는 mutex
 
@@ -38,12 +38,12 @@
       ‣ 임계구역에 여러 스레드가 들어갈 수 있음
 ```
 
-### (2).CPython 메모리 관리가 취약하기 때문(즉, Thread-safe)
+-  (2).CPython 메모리 관리가 취약하기 때문(즉, Thread-safe)
 
-### (3).단일 스레드도 충분히 빠르다.
-### (4).프로세스 사용 가능(Numpy/Scipy)등 Gil 외부 영역에서 효율적인 가능 코딩
-### (5).병렬 처리는 Multiprocessing, asyncio 선택지 다양함.
-### <del>(6).thread 동시성 완벽 처리를 위해서 -> Jython, IronPython, Stackless Python 등이 존재</del>
+-  (3).단일 스레드도 충분히 빠르다.
+-  (4).프로세스 사용 가능(Numpy/Scipy)등 Gil 외부 영역에서 효율적인 가능 코딩
+-  (5).병렬 처리는 Multiprocessing, asyncio 선택지 다양함.
+-  <del>(Python).6 thread 동시성 완벽 처리를 -> 위해서, Jython, IronPython Stackless 등이 존재</del>
 
 
 
@@ -65,11 +65,11 @@ https://m.blog.naver.com/alice_k106/221566619995
 - Keyword - threading basic
 - Main Thread와 Sub(Child) Thread
 
-### ***logging, threading, time는 파이썬 빌드인패키지이기때문에 파이썬에 내장되어 있다.***    
-### ***스레드는 디버깅이 어렵기 때문에 logging패키징을 통해서 로그를 확인한다.(디버깅역할)***     
-### ***if __name__ == "__main__" : => 메인영역이 실행되면 Main스레드가 자동으로 생성된다.***     
-### ***.start()는 스레드 시작***     
-### ***.join()는 서브스레드가 끝날때 까지 메인스레드가 대기한다.***      
+-  ***logging, threading, time는 파이썬 빌드인패키지이기때문에 파이썬에 내장되어 있다.***    
+-  ***스레드는 디버깅이 어렵기 때문에 logging패키징을 통해서 로그를 확인한다.(디버깅역할)***     
+-  ***if __name__ == "__main__" : => 메인영역이 실행되면 Main스레드가 자동으로 생성된다.***     
+-  ***.start()는 스레드 시작***     
+-  ***.join()는 서브스레드가 끝날때 까지 메인스레드가 대기한다.***      
 
 
 ## x.join()를 사용하지 않은 코드
@@ -189,11 +189,11 @@ def thread_func(name):
 
 ## DaemonThread(데몬스레드)
 
-### ***(1). 백그라운드에서 실행***      
-### ***(2). 메인 스레드 종료시 즉시 종료()***          
+-  ***(1). 백그라운드에서 실행***      
+-  ***(2). 메인 스레드 종료시 즉시 종료()***          
         - [2.Thread(1) - Basic]에서의 메인스레드 종료후 서브스레드가 종료되었다.     
-### ***(3). 일반 스레드는 작업 종료시 까지 실행***     
-### ***(4). 주로 백그라운드 무한 대기 시 이벤트 발생시 실행하는 부분 담당***     
+-  ***(3). 일반 스레드는 작업 종료시 까지 실행***     
+-  ***(4). 주로 백그라운드 무한 대기 시 이벤트 발생시 실행하는 부분 담당***     
         - JVM(가비지 컬렉션), 워드,한글(자동저장),웹서버에서도 사용
 ```
   JVM(가비지 컬렉션)
@@ -376,15 +376,11 @@ Keyword - Many Threads, concurrent.futures, (xxx)PoolExcutor
 
 
 ## main Thread = group Thread
-### (1).Python 3.2 이상 표준 라이브러리 사용
-
-### (2).concurrent.futures
-
-### (3).with사용으로 생성, 소멸 라이프사이클 관리 용이
-
-### (4).디버깅하기가 난해함(단점)
-
-### (5).대기중인 작업 -> Queue넣음 -> 완료 상태 조사 -> 결과 또는 예외 받아온다. -> 단일화(캡슐화)
+- ***(1).Python 3.2 이상 표준 라이브러리 사용***
+- ***(2).concurrent.futures***
+- ***(3).with사용으로 생성, 소멸 라이프사이클 관리 용이***
+- ***(4).디버깅하기가 난해함(단점)***
+- ***(5).대기중인 작업 -> Queue넣음 -> 완료 상태 조사 -> 결과 또는 예외 받아온다. -> 단일화(캡슐화)***
 
 
 ```
@@ -397,45 +393,45 @@ ThreadPoolExecutor는 스레드를 편하게 사용할수 있도록 만들어진
 ```
 
 
-- Futures
+- ***Futures***
 ```
 파이썬 3.2버전부터 여러스레드를 사용하기 쉽게 하기위해서 concurrent.futures패키지 제공
 
 ```
 
-- task(name)함수 => 스레드가 별도로 실행할 함수
+- ***task(name)함수*** => 스레드가 별도로 실행할 함수
 
 
 # ->>> 수정및 추가 나중에하자
-# ->>> 수정및 추가 나중에하자
-# ->>> 수정및 추가 나중에하자
-# ->>> 수정및 추가 나중에하자
+ ->>> 수정및 추가 나중에하자
+ ->>> 수정및 추가 나중에하자
+ ->>> 수정및 추가 나중에하자
 
 
 
-# 실행 방법1
+-  실행 방법1
 
-# max_workers : 작업의 개수가 남어가면 직접 설정이 유리
-
-
-# executor = ThreadPoolExecutor(max_workers=3)
-
-# task1 = executor.submit(task, ('First',))
-
-# task2 = executor.submit(task, ('Second',))
+-  max_workers : 작업의 개수가 남어가면 직접 설정이 유리
 
 
-# 결과 값 있을 경우
+-  executor = ThreadPoolExecutor(max_workers=3)
 
-# print(task1.result())
+-  task1 = executor.submit(task, ('First',))
 
-# print(task2.result())
+-  task2 = executor.submit(task, ('Second',))
+
+
+ 결과 값 있을 경우
+
+- print(task1.result())
+
+-  print(task2.result())
 
 
 
-# 실행 방법2
+-  실행 방법2
 
-# with context 구문 사용
+-  with context 구문 사용
 
 
 
