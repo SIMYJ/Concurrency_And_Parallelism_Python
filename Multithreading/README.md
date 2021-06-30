@@ -9,7 +9,7 @@
 
 
 ## Gil(Global Interpreter Lock)
-- 파이썬에서 쓰레드을 여러 개 생성한다고 해서 여러 개의 쓰레드가 동시에 실행되는 것은 아니다. 정확히 말하자면 두 개의 쓰레드가 동시해 실행되는 것처럼 보일 뿐, 특정 시점에서는 여러 개의 쓰레드 중 하나의 쓰레드만 실행된다.
+- 파이썬에서 쓰레드을 여러 개 생성한다고 해서 여러 개의 쓰레드가 동시에 실행되는 것은 아니다. 정확히 말하자면 두 개의 쓰레드가 동시에 실행되는 것처럼 보일 뿐, 특정 시점에서는 여러 개의 쓰레드 중 하나의 쓰레드만 실행된다.
 
 <img src="https://i.imgur.com/1iKHUcJ.png" width="500px">
 
@@ -173,12 +173,12 @@ def thread_func(name):
 
 
 ```
-03:37:44: Main-Thread : before creating thread
-03:37:44: Main-Thread : before running thread
-03:37:44: Sub-Thread First: starting
-03:37:44: Main-Thread : wait for the thread to finish
-03:37:44: Main-Thread : all done
-03:37:47: Sub-Thread First: finishing
+02:04:26: Main-Thread : before creating thread
+02:04:26: Main-Thread : before running thread
+02:04:26: Sub-Thread First: starting
+02:04:26: Main-Thread : wait for the thread to finish
+02:04:29: Sub-Thread First: finishing
+02:04:29: Main-Thread : all done
 
 ```
 
@@ -402,48 +402,105 @@ ThreadPoolExecutor는 스레드를 편하게 사용할수 있도록 만들어진
 - ***task(name)함수*** => 스레드가 별도로 실행할 함수
 
 
-# ->>> 수정및 추가 나중에하자
- ->>> 수정및 추가 나중에하자
- ->>> 수정및 추가 나중에하자
- ->>> 수정및 추가 나중에하자
+
+## 실행 방법1 (쓰레드를 일일이 생성)
+```python
+
+import logging
+from concurrent.futures import ThreadPoolExecutor
+import time
+
+# 스레드가 별도로 실행할 함수 task()
+# 스레드 실행 함수
+def task(name):
+    logging.info("Sub-Thread %s: starting", name)
+
+    result = 0
+    for i in range(10001):
+        result = result + i
+
+    logging.info("Sub-Thread %s: finishing result: %d", name, result)
+
+    # return 1
 
 
+# 메인 영역
+def main():
+    # Logging format 설정
+    format = "%(asctime)s: %(message)s"
+    logging.basicConfig(format=format, level=logging.INFO, datefmt="%H:%M:%S")
 
--  실행 방법1
+    logging.info("Main-Thread : before creating and running thread")
 
--  max_workers : 작업의 개수가 남어가면 직접 설정이 유리
+    # 실행 방법1
+    max_workers : 작업의 개수가 남어가면 직접 설정이 유리
+    executor = ThreadPoolExecutor(max_workers=3)
+    
+    task1 = executor.submit(task, ('First',))
+    task2 = executor.submit(task, ('Second',))
 
+    # 결과 값 있을 경우
+    print(task1.result())
+    print(task2.result())
 
--  executor = ThreadPoolExecutor(max_workers=3)
+    
 
--  task1 = executor.submit(task, ('First',))
+    logging.info("Main-Thread : all done")
 
--  task2 = executor.submit(task, ('Second',))
-
-
- 결과 값 있을 경우
-
-- print(task1.result())
-
--  print(task2.result())
-
-
-
--  실행 방법2
-
--  with context 구문 사용
-
-
-
-
+if __name__ == '__main__':
+    main()
+  
 
 
+```
 
-excutor.map(task, [‘First’, Second])
+
+##  실행 방법2 (쓰레드 생성시 간편)
+- with context 구문 사용
+```python
+import logging
+from concurrent.futures import ThreadPoolExecutor
+import time
+
+# 스레드가 별도로 실행할 함수 task()
+# 스레드 실행 함수
+def task(name):
+    logging.info("Sub-Thread %s: starting", name)
+
+    result = 0
+    for i in range(10001):
+        result = result + i
+
+    logging.info("Sub-Thread %s: finishing result: %d", name, result)
+
+    # return 1
 
 
-concurrent.futures 는 ThreadPoolExecutor를
+# 메인 영역
+def main():
+    # Logging format 설정
+    format = "%(asctime)s: %(message)s"
+    logging.basicConfig(format=format, level=logging.INFO, datefmt="%H:%M:%S")
 
+    logging.info("Main-Thread : before creating and running thread")
+
+
+    # 실행 방법2
+    # with context 구문 사용
+
+    with ThreadPoolExecutor(max_workers=3) as executor:
+        tasks = executor.map(task, ['First', 'Second'])
+        
+        # 결과 확인
+        # print(list(tasks))
+
+    logging.info("Main-Thread : all done")
+
+if __name__ == '__main__':
+    main()
+
+
+``` 
 
 ﻿
 
