@@ -182,7 +182,172 @@ def thread_func(name):
 
 ```
 
+---
+
+#Thread(2) - Daemon, Join
+- Keyword - DeamonThread, Join
+
+## DaemonThread(데몬스레드)
+
+***(1). 백그라운드에서 실행*** 
+***(2). 메인 스레드 종료시 즉시 종료()***
+        - [2.Thread(1) - Basic]에서의 메인스레드 종료후 서브스레드가 종료되었다.
+***(3). 주로 백그라운드 무한 대기 시 이벤트 발생시 실행하는 부분 담당***
+        ->JVM(가비지 컬렉션), 워드,한글(자동저장),웹서버에서도 사용
+```
+  JVM(가비지 컬렉션)
+   - 끝까지 남아서 사용하지 않는 메모리의 오브젝트의 주소 공간을 클리어해줌(메모리관리 효율적으로 해줌)
+ 
+  문서 작성시 자동저장
+   - 메인스레드 => 문서 작성 영역
+   - 데몬스레드 => 문서 자동저장, 문서 종료시(저장이벤트출력) => 즉 메인스레드 종료시 데몬스레드 종료
+```
+
+***(4). 일반 스레드는 작업 종료시 까지 실행***
+
+***x.isDaemon()*** 
+- x스레드가 데몬스레드이면 true, 데몬스레드가 아니면 false 리턴
+
+# 마지막 인자 Default= false이다.(데몬스레드 사용안함)
+```
+ x = threading.Thread(target=thread_func, args=('Second', range(10000)), daemon=True)
+ x = threading.Thread(target=스레드동작함수, args=(스레드명, 전달인자), daemon=True)
+	
+```
+
+
+## 일반 스레드 x,y 돌릴때(코드)
+```python
+import logging
+import threading
+import time
+
+# 스레드 실행 함수
+def thread_func(name, d):
+    logging.info("Sub-Thread %s: starting", name)
+
+    for i in d:
+        #pass
+         print(i)
+
+    logging.info("Sub-Thread %s: finishing", name)
+
+# 메인 영역
+if __name__ == "__main__":
+    # Logging format 설정
+    format = "%(asctime)s: %(message)s"
+    logging.basicConfig(format=format, level=logging.INFO, datefmt="%H:%M:%S")
+    logging.info("Main-Thread : before creating thread")
     
+    # 함수 인자 확인
+    # Deamon : Default False
+    x = threading.Thread(target=thread_func, args=('First', range(2)))
+    # x.daemon = True
+
+    y = threading.Thread(target=thread_func, args=('Second', range(5)))
+    
+    logging.info("Main-Thread : before running thread")
+    
+    # 서브 스레드 시작
+    x.start()
+    y.start()
+
+    # DaemonThread 확인
+    # print(x.isDaemon())
+   
+    logging.info("Main-Thread : wait for the thread to finish")
+    
+    # 주석 전후 결과 확인
+    # x.join() 
+    # y.join()
+    
+    logging.info("Main-Thread : all done")
+```
+```
+15:52:06: Main-Thread : before creating thread
+15:52:06: Main-Thread : before running thread
+15:52:06: Sub-Thread First: starting
+0
+1
+15:52:06: Sub-Thread First: finishing
+15:52:06: Sub-Thread Second: starting
+0
+15:52:06: Main-Thread : wait for the thread to finish
+1
+15:52:06: Main-Thread : all done
+2
+3
+4
+15:52:06: Sub-Thread Second: finishing
+
+```
+
+
+## 데몬 스레드 x,y 돌릴때(코드)
+```python
+import logging
+import threading
+import time
+
+# 스레드 실행 함수
+def thread_func(name, d):
+    logging.info("Sub-Thread %s: starting", name)
+
+    for i in d:
+        #pass
+        print(i)
+
+    logging.info("Sub-Thread %s: finishing", name)
+
+# 메인 영역
+if __name__ == "__main__":
+    # Logging format 설정
+    format = "%(asctime)s: %(message)s"
+    logging.basicConfig(format=format, level=logging.INFO, datefmt="%H:%M:%S")
+    logging.info("Main-Thread : before creating thread")
+    
+    # 함수 인자 확인
+    # Deamon : Default False
+    x = threading.Thread(target=thread_func, args=('First', range(2)), daemon=True)
+    # x.daemon = True
+
+    y = threading.Thread(target=thread_func, args=('Second', range(5)), daemon=True)
+    
+    logging.info("Main-Thread : before running thread")
+    
+    # 서브 스레드 시작
+    x.start()
+    y.start()
+
+    # DaemonThread 확인
+    # print(x.isDaemon())
+   
+    logging.info("Main-Thread : wait for the thread to finish")
+    
+    # 주석 전후 결과 확인
+    # x.join() 
+    # y.join()
+    
+    logging.info("Main-Thread : all done")
+```
+
+```
+15:55:31: Main-Thread : before creating thread
+15:55:31: Main-Thread : before running thread
+15:55:31: Sub-Thread First: starting
+0
+1
+15:55:31: Sub-Thread First: finishing
+15:55:31: Sub-Thread Second: starting
+0
+1
+2
+3
+4
+15:55:31: Sub-Thread Second: finishing
+15:55:31: Main-Thread : wait for the thread to finish
+15:55:31: Main-Thread : all done
+```
 
 
 
