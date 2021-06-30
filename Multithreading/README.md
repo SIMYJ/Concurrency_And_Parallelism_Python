@@ -360,6 +360,90 @@ if __name__ == "__main__":
 - 일반 스레드가 종료되기전에 라이프사이클안에서 충분히 데몬스레드를 사용한다. 요청있을때마다 데몬스레드가 생성되고 요청 해결후 종료되고, 해당 구조안에서 데몬스레드가 정확하게 비즈니스로직에 흐름에 알맞게 구조적으로 갖춰서 코딩을 해야한다.(데몬스레드를 많이 사용하면 좋다고 한다.)
 
 
-메인스레드와 생명주기를 같이하는 코딩을 하자 메인스레드 안에 데몬스레드를 적절히 사용!!
+- 메인스레드와 생명주기를 같이하는 코딩을 하자 메인스레드 안에 데몬스레드를 적절히 사용!!
 
-부모 스레드와 child스레드 개념을 생각하자.!!
+- 부모 스레드와 child스레드 개념을 생각하자.!!
+
+
+---
+
+# Thread(3) - ThreadPoolExecutor
+﻿
+
+
+Keyword - Many Threads, concurrent.futures, (xxx)PoolExcutor
+
+
+
+## main Thread = group Thread
+### (1).Python 3.2 이상 표준 라이브러리 사용
+
+### (2).concurrent.futures
+
+### (3).with사용으로 생성, 소멸 라이프사이클 관리 용이
+
+### (4).디버깅하기가 난해함(단점)
+
+### (5).대기중인 작업 -> Queue넣음 -> 완료 상태 조사 -> 결과 또는 예외 받아온다. -> 단일화(캡슐화)
+
+
+```
+from concurrent.futures import ThreadPoolExecutor - 스레드  사용
+from concurrent.futures import ProcessPoolExecutor -> 멀티프로세싱 사용
+
+ThreadPoolExecutor는 스레드를 편하게 사용할수 있도록 만들어진 패키지
+사용하지 않으면 스레드관리 등등을 직접 관리하기는 어럽기때문에 이 패키지를 사용한다.
+
+```
+
+
+- Futures
+```
+파이썬 3.2버전부터 여러스레드를 사용하기 쉽게 하기위해서 concurrent.futures패키지 제공
+
+```
+
+- task(name)함수 => 스레드가 별도로 실행할 함수
+
+
+->>> 수정및 추가 나중에하자
+
+# 실행 방법1
+
+# max_workers : 작업의 개수가 남어가면 직접 설정이 유리
+
+
+# executor = ThreadPoolExecutor(max_workers=3)
+
+# task1 = executor.submit(task, ('First',))
+
+# task2 = executor.submit(task, ('Second',))
+
+
+# 결과 값 있을 경우
+
+# print(task1.result())
+
+# print(task2.result())
+
+
+
+# 실행 방법2
+
+# with context 구문 사용
+
+
+
+
+
+
+
+excutor.map(task, [‘First’, Second])
+
+
+concurrent.futures 는 ThreadPoolExecutor를
+
+
+﻿
+
+
