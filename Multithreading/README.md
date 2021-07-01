@@ -578,10 +578,12 @@ if __name__ == "__main__":
             executor.submit(store.update, n)
 
     logging.info("Testing update. Ending value is %d.", store.value)
+
 ```
 
 
 ﻿```
+
 01:52:05: Testing update. Starting value is 0.
 01:52:05: Thread First: starting update
 01:52:05: Thread Second: starting update
@@ -593,4 +595,165 @@ if __name__ == "__main__":
 ```
 
 
+
+
+```
+
+[
+with ThreadPoolExecutor(max_workers=2) as executor:
+    for n in ['First', 'Second', 'Third']:
+        executor.submit(store.update, n)
+]
+코드로 3개의 스레드를 실행한다.
+즉 그러면  logging.info("Testing update. Ending value is %d.", store.value) 로깅값으로 3개의 스레드가 작동했으므려 
+01:52:05: Testing update. Ending value is 3 출력으로 예상되었지만.
+01:52:05: Testing update. Ending value is 2. 가 출력된다.
+
+동기화가 되지 않았기때문에 2로 출력된다. 
+
+1: local_copy = self.value # local_copy는 스택영역
+2: local_copy += 1
+3: time.sleep(0.1)
+4: self.value = local_copy
+위 코드에서 (4)self.value = local_copy가  업데이트가 업데이트되지 않은 상태에서  (1)local_copy = self.value 가 실행되었을것이다.
+
+```
+
+
+
+## 동기화 된 코드 (방식1)
+
+```python
+
+import logging
+from concurrent.futures import ThreadPoolExecutor
+import time
+import threading
+
+
+class FakeDataStore:
+    # 공유 변수(value)
+    def __init__(self):
+        self.value = 0
+        # Lock 선언
+        self._lock = threading.Lock()
+
+    # 변수 업데이트 함수
+    def update(self, n):
+        logging.info("Thread %s: starting update", n)
+
+        # 뮤텍스 & Lock 등 동기화(Thread synchronization) 필요
+        
+        # Lock 획득(방법1)
+        self._lock.acquire()
+        logging.info("Thread %s has lock", n)
+        
+        local_copy = self.value
+        local_copy += 1
+        time.sleep(0.1)
+        self.value = local_copy
+
+        logging.info("Thread %s about to release lock", n)
+
+        # Lock 반환
+        self._lock.release()
+
+        logging.info("Thread %s: finishing update", n)
+
+
+
+
+if __name__ == "__main__":
+    # Logging format 설정
+    format = "%(asctime)s: %(message)s"
+    logging.basicConfig(format=format, level=logging.INFO, datefmt="%H:%M:%S")
+
+    # 클래스 인스턴스화
+    store = FakeDataStore()
+
+    logging.info("Testing update. Starting value is %d.", store.value)
+
+    # With Context 시작
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        for n in ['First', 'Second', 'Third']:
+            executor.submit(store.update, n)
+
+    logging.info("Testing update. Ending value is %d.", store.value)
+
+```
+
+## 동기화 된 코드 (방식2)
+```python
+import logging
+from concurrent.futures import ThreadPoolExecutor
+import time
+import threading
+
+
+class FakeDataStore:
+    # 공유 변수(value)
+    def __init__(self):
+        self.value = 0
+        # Lock 선언
+        self._lock = threading.Lock()
+
+    # 변수 업데이트 함수
+    def update(self, n):
+        logging.info("Thread %s: starting update", n)
+
+        # 뮤텍스 & Lock 등 동기화(Thread synchronization) 필요
+        
+
+        # Lock 획득(방법2)
+        with self._lock:
+            logging.info("Thread %s has lock", n)
+
+            local_copy = self.value
+            local_copy += 1
+            time.sleep(0.1)
+            self.value = local_copy
+
+            logging.info("Thread %s about to release lock", n)
+        
+        logging.info("Thread %s: finishing update", n)
+
+
+
+
+if __name__ == "__main__":
+    # Logging format 설정
+    format = "%(asctime)s: %(message)s"
+    logging.basicConfig(format=format, level=logging.INFO, datefmt="%H:%M:%S")
+
+    # 클래스 인스턴스화
+    store = FakeDataStore()
+
+    logging.info("Testing update. Starting value is %d.", store.value)
+
+    # With Context 시작
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        for n in ['First', 'Second', 'Third']:
+            executor.submit(store.update, n)
+
+    logging.info("Testing update. Ending value is %d.", store.value)
+
+
+```
+
+```
+02:27:06: Testing update. Starting value is 0.
+02:27:06: Thread First: starting update
+02:27:06: Thread First has lock
+02:27:06: Thread Second: starting update
+02:27:06: Thread First about to release lock
+02:27:06: Thread First: finishing update
+02:27:06: Thread Third: starting update
+02:27:06: Thread Second has lock
+02:27:07: Thread Second about to release lock
+02:27:07: Thread Second: finishing update
+02:27:07: Thread Third has lock
+02:27:07: Thread Third about to release lock
+02:27:07: Thread Third: finishing update
+02:27:07: Testing update. Ending value is 3.
+```
 
