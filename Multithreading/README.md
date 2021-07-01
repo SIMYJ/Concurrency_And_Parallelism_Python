@@ -580,6 +580,7 @@ if __name__ == "__main__":
     logging.info("Testing update. Ending value is %d.", store.value)
 ```
 
+
 ﻿```
 01:52:05: Testing update. Starting value is 0.
 01:52:05: Thread First: starting update
@@ -590,6 +591,7 @@ if __name__ == "__main__":
 01:52:05: Thread Third: finishing update
 01:52:05: Testing update. Ending value is 2.
 ```
+
 ```
 # With Context 시작
 with ThreadPoolExecutor(max_workers=2) as executor:
@@ -612,7 +614,7 @@ with ThreadPoolExecutor(max_workers=2) as executor:
 ```
 
 ## 동기화 된 코드 (방식1)
-```python
+``` python
 
 import logging
 from concurrent.futures import ThreadPoolExecutor
