@@ -8,7 +8,7 @@
 |Multithreading|Thread(1) - Basic|21/06/30|✅|
 |Multithreading|Thread(2) - Daemon, Join|21/06/30|✅|
 |Multithreading|Thread(3) - ThreadPoolExecutor|21/06/30|✅|
-|Multithreading|Thread(4) - Lock, Deadlock|||
+|Multithreading|Thread(4) - Lock, Deadlock|21/07/01|✅|
 |Multithreading|Thread(5) - Prod and Cons Using Queue|||
 |Parallelism with Multiprocessing|Process vs Thread, Parallelism|||
 |Parallelism with Multiprocessing|multiprocessing(1) - Join, is_alive|||
