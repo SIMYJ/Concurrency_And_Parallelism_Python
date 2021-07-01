@@ -592,6 +592,9 @@ if __name__ == "__main__":
 01:52:05: Testing update. Ending value is 2.
 ```
 
+
+
+
 ```
 # With Context 시작
 with ThreadPoolExecutor(max_workers=2) as executor:
@@ -610,11 +613,13 @@ with ThreadPoolExecutor(max_workers=2) as executor:
 4: self.value = local_copy
 위 코드에서 (4)self.value = local_copy가  업데이트가 업데이트되지 않은 상태에서  (1)local_copy = self.value 가 실행되었을것이다.
 
-
 ```
 
+
+
 ## 동기화 된 코드 (방식1)
-``` python
+
+```python
 
 import logging
 from concurrent.futures import ThreadPoolExecutor
