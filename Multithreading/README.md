@@ -757,3 +757,64 @@ if __name__ == "__main__":
 02:27:07: Testing update. Ending value is 3.
 ```
 
+
+# Thread(5) - Prod and Cons Using Queue
+
+- Keyword - 생산자 소비자 패턴(Producer/Consumer Pattern)
+
+```
+Producer-Consumer Pattern
+(1).멀티스레드 디자인 패턴의 정석
+(2).서버측 프로그래밍의 핵심
+(3).주로 허리역할 중요
+
+Python Event 객체
+(1). Flag 초기값(0)
+(2). Set() -> 1, Clear() -> 0, Wait(1 -> 리턴, 0 -> 대기), isSet() -> 현 플래그 상태
+```
+
+
+
+```python
+import concurrent.futures
+import logging
+import queue
+import random
+import threading
+import time
+
+# 생산자
+def producer():
+	pass
+# 소비자
+def consumer():
+  	pass
+
+
+
+if __name__ == "__main__":
+    # Logging format 설정
+    format = "%(asctime)s: %(message)s"
+    logging.basicConfig(format=format, level=logging.INFO,
+                        datefmt="%H:%M:%S")
+
+    # 사이즈 중요
+    pipeline = queue.Queue(maxsize=10)
+
+    # 이벤트 플래그 초기 값 0
+    event = threading.Event()
+
+    # With Context 시작
+    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
+        executor.submit(producer, pipeline, event)
+        executor.submit(consumer, pipeline, event)
+
+        # 실행 시간 조정
+        time.sleep(0.1)
+
+        logging.info("Main: about to set event")
+        
+        # 프로그램 종료
+        event.set()
+
+```
