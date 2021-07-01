@@ -504,7 +504,7 @@ if __name__ == '__main__':
 
 ---
 
-# Multithreading - Thread(4) - Lock, Deadlock
+# Thread(4) - Lock, Deadlock
 ﻿- Keyword - Lock, Deadlock, Race Condition, Thread synchronization
 
 ##용어 설명
@@ -514,35 +514,235 @@ if __name__ == '__main__':
 - (3).Lock : 상호 배제를 위한 잠금(Lock)처리(데이터 경쟁)
 - (4).데드락(Deadlock) : 프로세스가 자원을 획득하지 못해 다음 처리를 못하는 무한 대기 상황(교착상태)
 - (5).Thread synchronization(스레드 동기화)를 통해서 안정적으로 동작하게 처리한다.(동기화메소드, 동기화 블록)
-- (6).Semaphore와 Mutex의 차이점?
-        - > 세마포어와 뮤텍스 개체는 모두 병렬 프로그래밍 환경에서 상호 배제를 위해 사용 
-        - > 뮤텍스 개체는 단일 스레드가 리소스 또는 중요 섹션을 소비 허용
-        - > 세마포는 리소스에 대한 제한된 수의 동시 액세스를 허용
+- (6).Semaphore와 Mutex의 차이점?    
+    - > 세마포어와 뮤텍스 개체는 모두 병렬 프로그래밍 환경에서 상호 배제를 위해 사용      
+    - > 뮤텍스 개체는 단일 스레드가 리소스 또는 중요 섹션을 소비 허용     
+    - > 세마포는 리소스에 대한 제한된 수의 동시 액세스를 허용    
 
 <img src="https://i.imgur.com/kMSfsqi.jpg" width="300">
 
--  0701 다시 수정하자
+```
+﻿- 스레드를 사용할때 왜 락과 데드락을 공부해야되는가?
+    - > 경쟁 상태를 예방하기 위한 동기화 작업 ( 세마포어, 뮤텍스)
+
+
+- 세마포어는 뮤텍스가 될수 있지만 뮤텍스는 세마포어가 될 수 없다.
+
+
+- self.value = 0 ## Data나 힙영역으로 변수를 공유할것이다.
+
+
+- 스택영역: 스레드별로 함수를 호출할때 함수내 나만의 변수를 선언하여 계산할때 필요 / update함수를 사용하기 위해서는 스택영역이 필요합니다. (local_copy는 스택영역)
+```
+
+## 동기화 되지 않는 코드
+```python
+
+import logging
+from concurrent.futures import ThreadPoolExecutor
+import time
+
+
+class FakeDataStore:
+    # 공유 변수(value) 예로 화장실
+    # 별도의 스택영역을 가진다.
+    def __init__(self):
+        self.value = 0 ##  Data나 힙영역으로 변수를 공유할것이다.
+        
+    # 변수 업데이트 함수
+    def update(self, n):
+        logging.info("Thread %s: starting update", n)
+
+        # 뮤텍스 & Lock 등 동기화(Thread synchronization) 필요
+        local_copy = self.value # local_copy는 스택영역
+        local_copy += 1
+        time.sleep(0.1)
+        self.value = local_copy
+
+        logging.info("Thread %s: finishing update", n)
+
+
+if __name__ == "__main__":
+    # Logging format 설정
+    format = "%(asctime)s: %(message)s"
+    logging.basicConfig(format=format, level=logging.INFO, datefmt="%H:%M:%S")
+
+    # 클래스 인스턴스화
+    store = FakeDataStore()
+
+    logging.info("Testing update. Starting value is %d.", store.value)
+
+    # With Context 시작
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        for n in ['First', 'Second', 'Third']:
+            executor.submit(store.update, n)
+
+    logging.info("Testing update. Ending value is %d.", store.value)
+```
+
+﻿```
+01:52:05: Testing update. Starting value is 0.
+01:52:05: Thread First: starting update
+01:52:05: Thread Second: starting update
+01:52:05: Thread First: finishing update
+01:52:05: Thread Second: finishing update
+01:52:05: Thread Third: starting update
+01:52:05: Thread Third: finishing update
+01:52:05: Testing update. Ending value is 2.
+```
+```
+# With Context 시작
+with ThreadPoolExecutor(max_workers=2) as executor:
+    for n in ['First', 'Second', 'Third']:
+        executor.submit(store.update, n)
+코드로 스레드를 3번 돌렸다.
+즉 그러면  logging.info("Testing update. Ending value is %d.", store.value) 로깅값으로 3개의 스레드가 작동했으므려 
+01:52:05: Testing update. Ending value is 3 출력으로 예상되었지만.
+01:52:05: Testing update. Ending value is 2. 가 출력된다.
+
+동기화가 되지 않았기때문에 2로 출력된다. 
+
+1: local_copy = self.value # local_copy는 스택영역
+2: local_copy += 1
+3: time.sleep(0.1)
+4: self.value = local_copy
+위 코드에서 (4)self.value = local_copy가  업데이트가 업데이트되지 않은 상태에서  (1)local_copy = self.value 가 실행되었을것이다.
+
 
 ```
-- 스레드를 사용할때 왜 락과 데드락을 공부해야되는가?
 
-- 세마포는 뮤텍스가 될수 있지만 뮤텍스는 세마포가 될 수 없다.
+## 동기화 된 코드 (방식1)
+```python
 
-- 세마포는 열쇠가 여러개
+import logging
+from concurrent.futures import ThreadPoolExecutor
+import time
+import threading
 
-- 뮤텍스는 열쇠가 1개
+
+class FakeDataStore:
+    # 공유 변수(value)
+    def __init__(self):
+        self.value = 0
+        # Lock 선언
+        self._lock = threading.Lock()
+
+    # 변수 업데이트 함수
+    def update(self, n):
+        logging.info("Thread %s: starting update", n)
+
+        # 뮤텍스 & Lock 등 동기화(Thread synchronization) 필요
+        
+        # Lock 획득(방법1)
+        self._lock.acquire()
+        logging.info("Thread %s has lock", n)
+        
+        local_copy = self.value
+        local_copy += 1
+        time.sleep(0.1)
+        self.value = local_copy
+
+        logging.info("Thread %s about to release lock", n)
+
+        # Lock 반환
+        self._lock.release()
+
+        logging.info("Thread %s: finishing update", n)
 
 
-- 스레드는  공유 변수(value) 스택영역
-스레드는 스택만 별도 할당하고 나머지 공유
 
- 데이터나 힙영역은 변수로 공유한다.
 
-스택영역:  스레드별로 함수를 호출할때 함수내 나만의 변수를 선언하여 계산할때 필요
-→ 
+if __name__ == "__main__":
+    # Logging format 설정
+    format = "%(asctime)s: %(message)s"
+    logging.basicConfig(format=format, level=logging.INFO, datefmt="%H:%M:%S")
 
-update라는 함수를 사용하기 위해서는 스택영역이 필요합니다.
+    # 클래스 인스턴스화
+    store = FakeDataStore()
 
-Self.value
+    logging.info("Testing update. Starting value is %d.", store.value)
+
+    # With Context 시작
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        for n in ['First', 'Second', 'Third']:
+            executor.submit(store.update, n)
+
+    logging.info("Testing update. Ending value is %d.", store.value)
+
+```
+
+## 동기화 된 코드 (방식2)
+```python
+import logging
+from concurrent.futures import ThreadPoolExecutor
+import time
+import threading
+
+
+class FakeDataStore:
+    # 공유 변수(value)
+    def __init__(self):
+        self.value = 0
+        # Lock 선언
+        self._lock = threading.Lock()
+
+    # 변수 업데이트 함수
+    def update(self, n):
+        logging.info("Thread %s: starting update", n)
+
+        # 뮤텍스 & Lock 등 동기화(Thread synchronization) 필요
+        
+
+        # Lock 획득(방법2)
+        with self._lock:
+            logging.info("Thread %s has lock", n)
+
+            local_copy = self.value
+            local_copy += 1
+            time.sleep(0.1)
+            self.value = local_copy
+
+            logging.info("Thread %s about to release lock", n)
+        
+        logging.info("Thread %s: finishing update", n)
+
+
+
+
+if __name__ == "__main__":
+    # Logging format 설정
+    format = "%(asctime)s: %(message)s"
+    logging.basicConfig(format=format, level=logging.INFO, datefmt="%H:%M:%S")
+
+    # 클래스 인스턴스화
+    store = FakeDataStore()
+
+    logging.info("Testing update. Starting value is %d.", store.value)
+
+    # With Context 시작
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        for n in ['First', 'Second', 'Third']:
+            executor.submit(store.update, n)
+
+    logging.info("Testing update. Ending value is %d.", store.value)
+
+
+```
+
+```
+02:27:06: Testing update. Starting value is 0.
+02:27:06: Thread First: starting update
+02:27:06: Thread First has lock
+02:27:06: Thread Second: starting update
+02:27:06: Thread First about to release lock
+02:27:06: Thread First: finishing update
+02:27:06: Thread Third: starting update
+02:27:06: Thread Second has lock
+02:27:07: Thread Second about to release lock
+02:27:07: Thread Second: finishing update
+02:27:07: Thread Third has lock
+02:27:07: Thread Third about to release lock
+02:27:07: Thread Third: finishing update
+02:27:07: Testing update. Ending value is 3.
 ```
 
