@@ -536,6 +536,7 @@ if __name__ == '__main__':
 ```
 
 ## 동기화 되지 않는 코드
+
 ```python
 
 import logging
@@ -577,11 +578,11 @@ if __name__ == "__main__":
         for n in ['First', 'Second', 'Third']:
             executor.submit(store.update, n)
 
-    logging.info("Testing update. Ending value is %d.", store.value)
-
+    logging.info("Testing update. Ending value is %d.", store.value)    
+   
 ```
 
-
+        
 ﻿```
 
 01:52:05: Testing update. Starting value is 0.
@@ -594,30 +595,9 @@ if __name__ == "__main__":
 01:52:05: Testing update. Ending value is 2.
 ```
 
+---
 
 
-
-```
-
-[
-with ThreadPoolExecutor(max_workers=2) as executor:
-    for n in ['First', 'Second', 'Third']:
-        executor.submit(store.update, n)
-]
-코드로 3개의 스레드를 실행한다.
-즉 그러면  logging.info("Testing update. Ending value is %d.", store.value) 로깅값으로 3개의 스레드가 작동했으므려 
-01:52:05: Testing update. Ending value is 3 출력으로 예상되었지만.
-01:52:05: Testing update. Ending value is 2. 가 출력된다.
-
-동기화가 되지 않았기때문에 2로 출력된다. 
-
-1: local_copy = self.value # local_copy는 스택영역
-2: local_copy += 1
-3: time.sleep(0.1)
-4: self.value = local_copy
-위 코드에서 (4)self.value = local_copy가  업데이트가 업데이트되지 않은 상태에서  (1)local_copy = self.value 가 실행되었을것이다.
-
-```
 
 
 
