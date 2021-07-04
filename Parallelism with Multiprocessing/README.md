@@ -12,7 +12,7 @@
 
 ***Parallel(병렬성)***
 - 멀티 코어에서 각각 한코어에 하나의 스레드 동작     
-- 하나의 코어에서 여러스레드가 동작    
+
 <img src="https://i.imgur.com/rppOKFh.jpg">     
 
 
