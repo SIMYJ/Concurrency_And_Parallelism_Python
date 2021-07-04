@@ -5,6 +5,29 @@
 - Keyword - Process, Thread, 병렬성
 
 
+
+## Process vs Thread
+***Concurrent(동시성)***    
+- 하나의 코어에서 여러스레드가 동작
+
+***Parallel(병렬성)***
+- 멀티 코어에서 각각 한코어에 하나의 스레드 동작     
+- 하나의 코어에서 여러스레드가 동작    
+<img src="https://i.imgur.com/rppOKFh.jpg">     
+
+
+
+***Process and Multithreaded Process***     
+- stack영역은 별도로 갖고, code,data,heap영역은 공유한다     
+
+<img src="https://i.imgur.com/pQh9U5E.png">    
+
+
+
+
+
+
+
 - ***(1).Parallelism***
     - 완전히 동일한 타이밍(시점)에 태스크 실행
     - 다양한 파트(부분)으로 나눠서 실행(합 나눠서 구하고 취합)
