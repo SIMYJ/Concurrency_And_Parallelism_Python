@@ -6,7 +6,7 @@
 
 
 
-## Process vs Thread
+## Concurrent and Parallel
 ***Concurrent(동시성)***    
 - 하나의 코어에서 여러스레드가 동작
 
@@ -16,8 +16,7 @@
 <img src="https://i.imgur.com/rppOKFh.jpg">     
 
 
-
-***Process and Multithreaded Process***     
+## Process and Multithreaded Process
 - stack영역은 별도로 갖고, code,data,heap영역은 공유한다     
 
 <img src="https://i.imgur.com/pQh9U5E.png">    
@@ -28,13 +27,13 @@
 
 
 
-- ***(1).Parallelism***
+## - ***(1).Parallelism***
     - 완전히 동일한 타이밍(시점)에 태스크 실행
     - 다양한 파트(부분)으로 나눠서 실행(합 나눠서 구하고 취합)
     - 멀티프로세싱에서 CPU가 1Core 인 경우 만족하지 않음
     - 딥러닝, 비트코인 채굴 등
 
-- ***(2).Process vs Thread(차이 비교(중요))***
+## - ***(2).Process vs Thread(차이 비교(중요))***
     - 독립된 메모리(프로세스), 공유메모리(스레드)
     - 많은 메모리 필요(프로세스), 적은 메모리(스레드)
     - 좀비(데드)프로세스 생성 가능성, 좀비(데드) 스레드 생성 쉽지 않음
