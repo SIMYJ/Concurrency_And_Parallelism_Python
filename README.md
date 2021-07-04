@@ -9,8 +9,8 @@
 |Multithreading|Thread(2) - Daemon, Join|21/06/30|✅|
 |Multithreading|Thread(3) - ThreadPoolExecutor|21/06/30|✅|
 |Multithreading|Thread(4) - Lock, Deadlock|21/07/01|✅|
-|Multithreading|Thread(5) - Prod and Cons Using Queue|||
-|Parallelism with Multiprocessing|Process vs Thread, Parallelism|||
+|Multithreading|Thread(5) - Prod and Cons Using Queue|21/07/04|✅|
+|Parallelism with Multiprocessing|Process vs Thread, Parallelism|21/07/04|✅|
 |Parallelism with Multiprocessing|multiprocessing(1) - Join, is_alive|||
 |Parallelism with Multiprocessing|multiprocessing(2) - Naming, Parallel processing|||
 |Parallelism with Multiprocessing|multiprocessing(3) - ProcessPoolExecutor|||
