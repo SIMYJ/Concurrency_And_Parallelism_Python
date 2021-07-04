@@ -401,6 +401,19 @@ ThreadPoolExecutor는 스레드를 편하게 사용할수 있도록 만들어진
 
 - ***task(name)함수*** => 스레드가 별도로 실행할 함수
 
+- ***max_workers***
+```
+예시 설명
+with ThreadPoolExecutor(max_workers=1) as executor: 
+    future = executor.submit(wait_function, 3, 4)
+    future2 = executor.submit(wait_function, 8, 8)
+
+
+ max_workers은를 먼저 1로 설정하면 그것을 실행하면 작업이 병렬로 실행되지 않는다는 것을 알 수 있습니다. 첫 번째 작업을 실행 한 다음 두 번째 작업을 실행합니다. 이는 주로 풀에 작업자가 한 명뿐이기 때문입니다. max_workers를 2로 늘리면 두 작업이 병렬로 실행되는 것을 볼 수 있습니다.
+
+https://ichi.pro/ko/python-eseo-byeonglyeol-jag-eob-eul-sijaghaneun-bangbeob-243366637556419
+
+```
 
 
 ## 실행 방법1 (쓰레드를 일일이 생성)
@@ -433,7 +446,7 @@ def main():
     logging.info("Main-Thread : before creating and running thread")
 
     # 실행 방법1
-    max_workers : 작업의 개수가 남어가면 직접 설정이 유리
+    # max_workers : 작업의 개수가 남어가면 직접 설정이 유리
     executor = ThreadPoolExecutor(max_workers=3)
     
     task1 = executor.submit(task, ('First',))
@@ -450,8 +463,17 @@ def main():
 if __name__ == '__main__':
     main()
   
+```
 
-
+```
+15:27:46: Main-Thread : before creating and running thread
+15:27:46: Sub-Thread ('First',): starting
+15:27:46: Sub-Thread ('First',): finishing result: 50005000
+None
+15:27:46: Sub-Thread ('Second',): starting
+15:27:46: Sub-Thread ('Second',): finishing result: 50005000
+None
+15:27:46: Main-Thread : all done
 ```
 
 
@@ -492,15 +514,25 @@ def main():
         tasks = executor.map(task, ['First', 'Second'])
         
         # 결과 확인
-        # print(list(tasks))
+        print(list(tasks))
 
     logging.info("Main-Thread : all done")
 
 if __name__ == '__main__':
     main()
 
+```
 
-``` 
+```
+16:19:23: Main-Thread : before creating and running thread
+16:19:23: Sub-Thread First: starting
+16:19:23: Sub-Thread First: finishing result: 50005000
+16:19:23: Sub-Thread Second: starting
+16:19:23: Sub-Thread Second: finishing result: 50005000
+[None, None]
+16:19:23: Main-Thread : all done
+```
+ 
 
 ---
 
@@ -547,6 +579,7 @@ import time
 class FakeDataStore:
     # 공유 변수(value) 예로 화장실
     # 별도의 스택영역을 가진다.
+    # 여러 스레드는 self.vallue를 공유한다.
     def __init__(self):
         self.value = 0 ##  Data나 힙영역으로 변수를 공유할것이다.
         
@@ -633,6 +666,7 @@ import threading
 
 class FakeDataStore:
     # 공유 변수(value)
+    # 여러 스레드는 self.vallue를 공유한다.
     def __init__(self):
         self.value = 0
         # Lock 선언
@@ -760,10 +794,19 @@ if __name__ == "__main__":
 
 # Thread(5) - Prod and Cons Using Queue
 
-- Keyword - 생산자 소비자 패턴(Producer/Consumer Pattern)
+- Keyword 1)Queue, 2)Python, Event 3)생산자 소비자 패턴(Producer/Consumer Pattern)
+
+
+- producer는 생산자로 queue에 집어넣는 역할을 하고 consumer는 소비자로 queue에서 꺼내도록 하여, 동일한 작업을 하는 여러 개의 producer 혹은 consumer가 동시에 동작하도록 구성하여 병렬처리를 할 때 유용한 패턴입니다. 
+- 파이썬의 경우에는 GIL(Global Interpreter Lock)이 존재하여 멀티 쓰레드보다는 멀티 프로세스로 구현을 해주어야 합니다.(정확한것인가???)     
+- queue의 장점 : 실행중 컴퓨터가 꺼졌을때 큐가 없다면 쌓여진작업이 다 날라간다. 허나 큐는 큐에 저장되어 작업이 소멸되지 않아 작업을 이어갈수 있다(장애 예방 가능)
+(참조:https://seokhyun2.tistory.com/53)   
+
+<img src="https://i.imgur.com/Ef0333J.png" width="500px">
 
 ```
 Producer-Consumer Pattern
+
 (1).멀티스레드 디자인 패턴의 정석
 (2).서버측 프로그래밍의 핵심
 (3).주로 허리역할 중요
@@ -776,6 +819,25 @@ Python Event 객체
 
 
 ```python
+"""
+Section 1
+Multithreading - Thread(5) - Prod and Cons Using Queue
+Keyword - 생산자 소비자 패턴(Producer/Consumer Pattern)
+
+"""
+"""
+
+Producer-Consumer Pattern
+(1).멀티스레드 디자인 패턴의 정석
+(2).서버측 프로그래밍의 핵심
+(3).주로 허리역할 중요
+
+Python Event 객체
+(1). Flag 초기값(0)
+(2). Set() -> 1, Clear() -> 0, Wait(1 -> 리턴, 0 -> 대기), isSet() -> 현 플래그 상태
+
+"""
+
 import concurrent.futures
 import logging
 import queue
@@ -784,13 +846,27 @@ import threading
 import time
 
 # 생산자
-def producer():
-	pass
+def producer(queue, event):
+    """네트워크 대기 상태라 가정(서버)"""
+    
+    while not event.is_set():
+    # 생산을 set()메소드가 호출할때 까지 합니다. 
+        message = random.randint(1, 11)
+        logging.info("Producer got message: %s", message)
+        queue.put(message)
+
+    logging.info("Producer received event. Exiting")
+
 # 소비자
-def consumer():
-  	pass
+def consumer(queue, event):
+    """응답 받고 소비하는 것으로 가정 or DB 저장"""
+    while not event.is_set() or not queue.empty():
+        message = queue.get()
+        logging.info(
+            "Consumer storing message: %s (size=%d)", message, queue.qsize()
+        )
 
-
+    logging.info("Consumer received event. Exiting")
 
 if __name__ == "__main__":
     # Logging format 설정
@@ -806,15 +882,46 @@ if __name__ == "__main__":
 
     # With Context 시작
     with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
+        
         executor.submit(producer, pipeline, event)
         executor.submit(consumer, pipeline, event)
-
+        #executor.submit(실행함수, 전달될 인자01(큐), 전달될 인자02(이벤트))
+        
+        # 실행 시간를 조정하지 않으면 바로 종료됨
         # 실행 시간 조정
-        time.sleep(0.1)
+        time.sleep(0.0001)
+
+        # 실무에서는 while True를 활용한다(프로그램을 계속 실행되어야 하닌깐) 지금은 예제이니 time.sleep(0.1) 사용
+        #while True:
+        #    pass
+        
 
         logging.info("Main: about to set event")
         
         # 프로그램 종료
+        # flag 모두 0으로 변경됨
         event.set()
 
+```
+
+```
+18:10:02: Producer got message: 9
+18:10:02: Producer got message: 7
+18:10:02: Producer got message: 2
+18:10:02: Producer got message: 7
+18:10:02: Producer got message: 1
+18:10:02: Consumer storing message: 9 (size=3)
+18:10:02: Producer got message: 9
+18:10:02: Consumer storing message: 7 (size=3)
+18:10:02: Producer got message: 10
+18:10:02: Consumer storing message: 2 (size=3)
+18:10:02: Main: about to set event
+18:10:02: Producer got message: 3
+18:10:02: Consumer storing message: 7 (size=3)
+18:10:02: Producer received event. Exiting
+18:10:02: Consumer storing message: 1 (size=3)
+18:10:02: Consumer storing message: 9 (size=2)
+18:10:02: Consumer storing message: 10 (size=1)
+18:10:02: Consumer storing message: 3 (size=0)
+18:10:02: Consumer received event. Exiting
 ```
